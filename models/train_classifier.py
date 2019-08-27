@@ -11,6 +11,8 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import RandomizedSearchCV, train_test_split
+from sklearn.metrics import classification_report
+from joblib import dump
 
 def remove_outliers(df):
     """
@@ -42,7 +44,7 @@ def load_data(database_filepath):
     Output:
         X: features array
         y: multi-target output array
-        category_names: target names
+        category_names: targets names
 
     """
     engine = create_engine(f"sqlite:///{database_filepath}")
@@ -100,44 +102,64 @@ def build_model():
             ('clf', MultiOutputClassifier(RandomForestClassifier(n_jobs=-1),n_jobs=-1))
         ])
 
-    param_dist = {'clf__estimator__n_estimators': [10],
-                  'clf__estimator__criterion':['gini','entropy'],
-                  'clf__estimator__max_depth':list(range(1,10))+list(range(10,100,10))+ \
-                                              list(range(100,1100,100)),
-                  'clf__estimator__min_samples_split': list(range(2,20)),
-                  'clf__estimator__min_samples_leaf': list(range(2,20))}
+    param_distributions = {'clf__estimator__n_estimators': [10],
+                        'clf__estimator__criterion':['gini','entropy'],
+                        'clf__estimator__max_depth':list(range(1,10))+list(range(10,100,10))+list(range(100,1100,100)),
+                        'clf__estimator__min_samples_split': list(range(2,20)),
+                        'clf__estimator__min_samples_leaf': list(range(2,20))}
 
     cv = RandomizedSearchCV(pipeline,
-                            param_distributions=param_dist,
+                            param_distributions=param_distributions,
                             n_iter=20,
-                            cv=3,
-                            n_jobs=-1)
+                            cv=3)
     
     return cv
 
 def evaluate_model(model, X_test, Y_test, category_names):
-    pass
+    """
+    Evalautes the model performance printing a classification
+    report.
+
+    Arguments:
+        model: the trained classifier
+        X_test: the testing features
+        Y_test: the testing targets
+        category_names: the targets names
+    """
+
+    y_pred = model.predict(X_test)
+    
+    for i in range(y_pred.shape[1]):
+        print(f"Feature Name: {category_names[i]}")
+        print(classification_report(Y_test[:,i], y_pred[:,i]))
 
 
 def save_model(model, model_filepath):
-    pass
+    """
+    Saves the final model.
+
+    Argument:
+        model: the final trained model
+        model_filepath: outpath to save the model
+    """
+    dump(model, model_filepath) 
 
 
 def main():
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
-        X, Y, category_names = load_data(database_filepath)
-        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
+        X, y, category_names = load_data(database_filepath)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
         
         print('Building model...')
         model = build_model()
         
         print('Training model...')
-        model.fit(X_train, Y_train)
+        model.fit(X_train,y_train)
         
         print('Evaluating model...')
-        evaluate_model(model, X_test, Y_test, category_names)
+        evaluate_model(model, X_test, y_test, category_names)
 
         print('Saving model...\n    MODEL: {}'.format(model_filepath))
         save_model(model, model_filepath)
