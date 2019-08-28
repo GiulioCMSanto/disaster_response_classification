@@ -1,10 +1,11 @@
 # Disaster Response Pipeline Project
 You can imagine that when a disaster happens, millions of messages are communicated through
-a variety of channels, such as social media. Moreover, usually there are different organizations that
-involved in trying to solve the problem. Usually, each organization is focused in one
+a variety of channels, such as social media. Moreover, usually there are different organizations
+involved in trying to solve the problem. Usually, each organization is focused on one
 particular problem, such as providing water. Figure Eight provided us a dataset with real
-messages categorized into one kind of particular need for support, such as: food, water, shelter
-and so on so forth. 
+messages categorized into one kind of particular need for support, such as food, water and shelter.
+Therefore, our goal is to use these messages to create a classifier that is able to identify the type
+of support requested in a particular piece of text.
 
 ### Motivation
 The objective of this project is to build a full ETL pipeline for treating this data as well as a
