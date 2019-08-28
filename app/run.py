@@ -26,6 +26,17 @@ def tokenize(text):
     return clean_tokens
 
 def text_prop_per_target(df):
+    """
+    Creates data with the proportion of messages in each
+    target category.
+
+    Arguments:
+        df: the DisasterResponse table
+
+    Output:
+        X: x axis data (target categories)
+        y: y axis data (proportion per category)
+    """
     text_prop = df.iloc[:,4:].sum()/df.iloc[:,4:].sum().sum()
     text_prop = text_prop.sort_values(ascending=False)
     X = list(text_prop.index)

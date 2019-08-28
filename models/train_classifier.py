@@ -95,7 +95,11 @@ def tokenize(text):
 
 
 def build_model():
-    
+    """
+    Builds a Machine Learning Pipeline as well as a
+    randomized search for parameters that can be used
+    for training.
+    """
     pipeline = Pipeline([
             ('vect', CountVectorizer(tokenizer=tokenize)),
             ('tfidf', TfidfTransformer()),
