@@ -25,6 +25,13 @@ def tokenize(text):
 
     return clean_tokens
 
+def text_prop_per_target(df):
+    text_prop = df.iloc[:,4:].sum()/df.iloc[:,4:].sum().sum()
+    text_prop = text_prop.sort_values(ascending=False)
+    X = list(text_prop.index)
+    y = list(text_prop.values)
+    return X,y
+
 # load data
 engine = create_engine('sqlite:///../data/DisasterResponse.db')
 df = pd.read_sql_table('DisasterResponse', engine)
@@ -39,9 +46,12 @@ model = load("../models/classifier.pkl")
 def index():
     
     # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
+    #Visual 1
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
+
+    #Visual 2
+    x_prop, y_prop = text_prop_per_target(df)
     
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
@@ -67,8 +77,8 @@ def index():
         {
             'data': [
                 Bar(
-                    x=genre_names,
-                    y=genre_counts
+                    x=x_prop,
+                    y=y_prop
                 )
             ],
 
@@ -78,7 +88,8 @@ def index():
                     'title': "Count"
                 },
                 'xaxis': {
-                    'title': "Genre"
+                    'title': "Genre",
+                    'tickangle': -70
                 }
             }
         }
