@@ -29,9 +29,11 @@ Plotly.
 
 ### Results
 Results were dislayed in a dashboard using HTML, Flask and Plotly, as shown bellow:
+
 <img src="image.png" alt="drawing"/>
 With this dashboard, one can easily insert a massage to be classified and visualized the predicted
 categories. Moreover, the main page includes some visualizations:
+
 <img src="image_2.png" alt="drawing"/>
 <img src="image_3.png" alt="drawing"/>
 
